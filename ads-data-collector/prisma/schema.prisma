@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Exemple de modèle pour les données quotidiennes
+model DailyAdData {
+  id          Int      @id @default(autoincrement())
+  date        DateTime @db.Date // Stocke uniquement la date (jour, mois, année)
+  platform    String   // 'google' ou 'facebook'
+  campaignId  String   // ID de la campagne sur la plateforme
+  campaignName String
+  impressions Int
+  clicks      Int
+  cost        Float
+
+  // Créer un index pour améliorer les recherches par date et plateforme
+  @@index([date, platform])
+  // Créer un index unique pour éviter les doublons pour une même campagne, plateforme et date
+  @@unique([date, platform, campaignId])
+}
